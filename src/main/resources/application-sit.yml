@@ -1,0 +1,44 @@
+# System Integration Testing (SIT) profile configuration
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/monopolydb-sit;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: false
+  main:
+    allow-bean-definition-overriding: true
+
+# Logging configuration
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        web: INFO
+      hibernate:
+        SQL: DEBUG
+
+# Swagger configuration
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+# Server configuration
+server:
+  port: 8080
+  error:
+    include-stacktrace: always
