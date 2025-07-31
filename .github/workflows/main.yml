@@ -42,15 +42,15 @@ jobs:
     - name: Determine environment for deployment
       id: env-vars
       run: |
-        if [[ "${{ github.event.inputs.environment }}" == "prod" || ("${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main") ]]; then
-          echo "SPRING_PROFILE=prod" >> $GITHUB_OUTPUT
-          echo "RENDER_DEPLOY_HOOK=${{ secrets.RENDER_PROD_DEPLOY_HOOK }}" >> $GITHUB_OUTPUT
+        if [[ "${{ github.event.inputs.environment }}" == "dev" || ("${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main") ]]; then
+          echo "SPRING_PROFILE=dev" >> $GITHUB_OUTPUT
+          echo "RENDER_DEPLOY_HOOK=${{ secrets.RENDER_DEV_DEPLOY_HOOK }}" >> $GITHUB_OUTPUT
         elif [[ "${{ github.event.inputs.environment }}" == "sit" ]]; then
           echo "SPRING_PROFILE=sit" >> $GITHUB_OUTPUT
           echo "RENDER_DEPLOY_HOOK=${{ secrets.RENDER_SIT_DEPLOY_HOOK }}" >> $GITHUB_OUTPUT
         else
-          echo "SPRING_PROFILE=dev" >> $GITHUB_OUTPUT
-          echo "RENDER_DEPLOY_HOOK=${{ secrets.RENDER_DEV_DEPLOY_HOOK }}" >> $GITHUB_OUTPUT
+          echo "SPRING_PROFILE=prod" >> $GITHUB_OUTPUT
+          echo "RENDER_DEPLOY_HOOK=${{ secrets.RENDER_PROD_DEPLOY_HOOK }}" >> $GITHUB_OUTPUT
         fi
 
     - name: Deploy to Render

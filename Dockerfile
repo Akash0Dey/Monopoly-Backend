@@ -19,7 +19,7 @@ RUN mkdir -p /app/data && chmod 777 /app/data
 COPY --from=build /app/build/libs/*.jar app.jar
 
 # Environment variables with defaults
-ENV SPRING_PROFILES_ACTIVE=prod
+ENV SPRING_PROFILES_ACTIVE=dev
 
 # Run the application using the PORT that Render provides
 CMD java -Dserver.port=${PORT:-8080} -jar app.jar
