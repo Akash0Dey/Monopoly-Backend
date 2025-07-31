@@ -23,7 +23,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.commit || github.sha }}
+          ref: ${{ github.event.inputs.commit != '' && github.event.inputs.commit || github.sha }}
 
       - name: Set environment variables
         id: env-vars
