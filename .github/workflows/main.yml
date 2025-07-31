@@ -56,5 +56,13 @@ jobs:
     - name: Deploy to Render
       if: success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
       run: |
-        curl -X POST ${{ steps.env-vars.outputs.RENDER_DEPLOY_HOOK }}
+        HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST ${{ steps.env-vars.outputs.RENDER_DEPLOY_HOOK }})
+        
+        if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+          echo "Render deployment triggered successfully (HTTP $HTTP_STATUS)"
+        else
+          echo "Failed to trigger Render deployment (HTTP $HTTP_STATUS)"
+          exit 1  # Fail the GitHub Actions job
+        fi
+      
     
