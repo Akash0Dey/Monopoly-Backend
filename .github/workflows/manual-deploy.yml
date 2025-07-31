@@ -1,0 +1,51 @@
+name: Manual Deploy to Render
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment (dev, sit, prod)'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - sit
+          - prod
+      commit:
+        description: 'Commit SHA to deploy (optional)'
+        required: false
+
+jobs:
+  manual-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.commit || github.sha }}
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          if [[ "${{ github.event.inputs.environment }}" == "dev" ]]; then
+            echo "SPRING_PROFILE=dev" >> $GITHUB_OUTPUT
+            echo "RENDER_DEPLOY_HOOK=${{ secrets.RENDER_DEV_DEPLOY_HOOK }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.inputs.environment }}" == "sit" ]]; then
+            echo "SPRING_PROFILE=sit" >> $GITHUB_OUTPUT
+            echo "RENDER_DEPLOY_HOOK=${{ secrets.RENDER_SIT_DEPLOY_HOOK }}" >> $GITHUB_OUTPUT
+          else
+            echo "SPRING_PROFILE=prod" >> $GITHUB_OUTPUT
+            echo "RENDER_DEPLOY_HOOK=${{ secrets.RENDER_PROD_DEPLOY_HOOK }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to Render
+        run: |
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST ${{ steps.env-vars.outputs.RENDER_DEPLOY_HOOK }})
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "Render deployment triggered successfully (HTTP $HTTP_STATUS)"
+          else
+            echo "Failed to trigger Render deployment (HTTP $HTTP_STATUS)"
+            exit 1
+          fi
+
