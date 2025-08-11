@@ -4,13 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Target environment (dev, sit, prod)'
+        description: 'Target environment (dev, prod)'
         required: true
         default: 'dev'
         type: choice
         options:
           - dev
-          - sit
           - prod
       commit:
         description: 'Commit SHA to deploy (optional)'
@@ -31,9 +30,6 @@ jobs:
           if [[ "${{ github.event.inputs.environment }}" == "dev" ]]; then
             echo "SPRING_PROFILE=dev" >> $GITHUB_OUTPUT
             echo "RENDER_DEPLOY_HOOK=${{ secrets.RENDER_DEV_DEPLOY_HOOK }}" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event.inputs.environment }}" == "sit" ]]; then
-            echo "SPRING_PROFILE=sit" >> $GITHUB_OUTPUT
-            echo "RENDER_DEPLOY_HOOK=${{ secrets.RENDER_SIT_DEPLOY_HOOK }}" >> $GITHUB_OUTPUT
           else
             echo "SPRING_PROFILE=prod" >> $GITHUB_OUTPUT
             echo "RENDER_DEPLOY_HOOK=${{ secrets.RENDER_PROD_DEPLOY_HOOK }}" >> $GITHUB_OUTPUT
