@@ -2,9 +2,12 @@ package com.monopoly.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 public class UserRequest {
-    private String username;
+    public String username;
 }

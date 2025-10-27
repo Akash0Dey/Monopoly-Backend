@@ -15,12 +15,14 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
@@ -86,7 +88,8 @@ public class AuthController {
                     )
             )
     })
-    public UserResponse createUser(@RequestBody UserRequest userRequest) {
+    public UserResponse createUser(@org.springframework.web.bind.annotation.RequestBody UserRequest userRequest) {
+        log.info("username={} is attempting to log in", userRequest.getUsername());
         return loginService.login(userRequest);
     }
 
@@ -147,7 +150,8 @@ public class AuthController {
                     )
             )
     })
-    public LogoutResponse logoutUser(@RequestBody UserRequest userRequest) {
+    public LogoutResponse logoutUser(@org.springframework.web.bind.annotation.RequestBody UserRequest userRequest) {
+        log.info("username={} is attempting to log out", userRequest.getUsername());
         return LogoutResponse.builder().success(logoutService.logout(userRequest)).build();
     }
 }
