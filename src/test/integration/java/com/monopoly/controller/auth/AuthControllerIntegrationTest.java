@@ -5,6 +5,7 @@ import com.monopoly.controller.dto.UserRequest;
 import com.monopoly.controller.dto.UserResponse;
 import com.monopoly.repository.UserRepository;
 import com.monopoly.service.auth.LoginService;
+import com.monopoly.service.auth.LogoutService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,8 +18,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(LoginController.class)
-public class LoginControllerIntegrationTest {
+@WebMvcTest(AuthController.class)
+public class AuthControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -30,7 +31,7 @@ public class LoginControllerIntegrationTest {
     private LoginService loginService;
 
     @MockitoBean
-    private UserRepository userRepository;
+    private LogoutService logoutService;
 
     @Test
     void testCreateUser() throws Exception {
@@ -48,5 +49,19 @@ public class LoginControllerIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.username").value("testUser"))
                 .andExpect(jsonPath("$.roomId").isEmpty());
+    }
+
+    @Test
+    void testLogoutUser() throws Exception {
+        UserRequest userRequest = new UserRequest("testUser");
+
+        when(logoutService.logout(any(UserRequest.class))).thenReturn(true);
+
+        mockMvc.perform(post("/api/auth/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userRequest)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.success").value(true));
     }
 }
