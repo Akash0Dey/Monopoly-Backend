@@ -12,5 +12,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByUsername(String username);
 
-    boolean deleteByUsername(String username);
+    int deleteByUsername(String username);
 }

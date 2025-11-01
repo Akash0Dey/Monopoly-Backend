@@ -26,7 +26,7 @@ public class LogoutServiceTest {
     void Logout_success() {
         UserRequest userRequest = new UserRequest("testUser");
         when(userRepository.existsByUsername(userRequest.getUsername())).thenReturn(true);
-        when(userRepository.deleteByUsername(userRequest.getUsername())).thenReturn(true);
+        when(userRepository.deleteByUsername(userRequest.getUsername())).thenReturn(1);
 
         assertTrue(logoutService.logout(userRequest));
     }
