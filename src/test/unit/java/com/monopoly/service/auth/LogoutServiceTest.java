@@ -22,20 +22,28 @@ public class LogoutServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    private final String username = "testUser";
+
     @Test
     void Logout_success() {
-        UserRequest userRequest = new UserRequest("testUser");
-        when(userRepository.existsByUsername(userRequest.getUsername())).thenReturn(true);
-        when(userRepository.deleteByUsername(userRequest.getUsername())).thenReturn(1);
+        when(userRepository.existsByUsername(username)).thenReturn(true);
+        when(userRepository.deleteByUsername(username)).thenReturn(1);
 
-        assertTrue(logoutService.logout(userRequest));
+        assertTrue(logoutService.logout(username));
     }
 
     @Test
     void Logout_UserNotExit() {
-        UserRequest userRequest = new UserRequest("testUser");
-        when(userRepository.existsByUsername(userRequest.getUsername())).thenReturn(false);
+        when(userRepository.existsByUsername(username)).thenReturn(false);
 
-        assertFalse(logoutService.logout(userRequest));
+        assertFalse(logoutService.logout(username));
+    }
+
+    @Test
+    void  Logout_UserExitButDeleteNotDone() {
+        when(userRepository.existsByUsername(username)).thenReturn(true);
+        when(userRepository.deleteByUsername(username)).thenReturn(0);
+
+        assertFalse(logoutService.logout(username));
     }
 }

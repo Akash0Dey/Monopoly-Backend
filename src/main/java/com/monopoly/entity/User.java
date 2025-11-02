@@ -23,9 +23,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(name = "created_at")
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "roomId")
-    @Builder.Default private String roomId = null;
+    @Builder.Default
+    private String roomId = null;
 }

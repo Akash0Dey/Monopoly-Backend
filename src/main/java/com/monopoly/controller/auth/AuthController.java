@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
 
 @Slf4j
 @CrossOrigin
@@ -90,7 +93,9 @@ public class AuthController {
     })
     public UserResponse createUser(@org.springframework.web.bind.annotation.RequestBody UserRequest userRequest) {
         log.info("username={} is attempting to log in", userRequest.getUsername());
-        return loginService.login(userRequest);
+        UserResponse userResponse = loginService.login(userRequest);
+        log.info("userResponse={}", userResponse);
+        return userResponse;
     }
 
     @PostMapping("/logout")
@@ -150,8 +155,12 @@ public class AuthController {
                     )
             )
     })
-    public LogoutResponse logoutUser(@org.springframework.web.bind.annotation.RequestBody UserRequest userRequest) {
-        log.info("username={} is attempting to log out", userRequest.getUsername());
-        return LogoutResponse.builder().success(logoutService.logout(userRequest)).build();
+    public LogoutResponse logoutUser(HttpServletRequest request) {
+        String username = request.getHeader("username");
+        log.info("request: {}", Arrays.toString(request.getCookies()));
+        log.info("username={} is attempting to log out", username);
+        LogoutResponse logoutResponse = LogoutResponse.builder().success(logoutService.logout(username)).build();
+        log.info("logoutResponse={}", logoutResponse);
+        return logoutResponse;
     }
 }

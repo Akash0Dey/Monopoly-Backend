@@ -33,6 +33,9 @@ public class AuthControllerIntegrationTest {
     @MockitoBean
     private LogoutService logoutService;
 
+    @MockitoBean
+    private UserRepository userRepository;
+
     @Test
     void testCreateUser() throws Exception {
         UserRequest userRequest = new UserRequest("testUser");
@@ -53,13 +56,11 @@ public class AuthControllerIntegrationTest {
 
     @Test
     void testLogoutUser() throws Exception {
-        UserRequest userRequest = new UserRequest("testUser");
-
-        when(logoutService.logout(any(UserRequest.class))).thenReturn(true);
+        when(logoutService.logout("testUser")).thenReturn(true);
 
         mockMvc.perform(post("/api/auth/logout")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userRequest)))
+                .header("username", "testUser")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.success").value(true));
