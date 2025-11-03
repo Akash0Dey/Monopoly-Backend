@@ -1,9 +1,5 @@
 package com.monopoly.controller.lobby;
-import com.monopoly.controller.dto.LogoutResponse;
-import com.monopoly.controller.dto.UserRequest;
 import com.monopoly.controller.dto.UserResponse;
-import com.monopoly.service.auth.LoginService;
-import com.monopoly.service.auth.LogoutService;
 import com.monopoly.service.auth.UserService;
 import com.monopoly.service.lobby.LobbyService;
 import jakarta.servlet.http.HttpServletRequest;

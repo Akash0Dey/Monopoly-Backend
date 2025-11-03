@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, String> {
     @Transactional
-    Optional<Room> findFirstByStatus(Room.Status status);
+    Optional<Room> findFirstByStatus(String status);
 }
 

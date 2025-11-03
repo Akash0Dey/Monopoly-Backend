@@ -37,13 +37,13 @@ public class LobbyServiceTest {
     void assignLobby_whenWaitingRoomPresent() {
         User user = User.builder().username(username).build();
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(roomRepository.findFirstByStatus(Room.Status.NOT_STARTED))
+        when(roomRepository.findFirstByStatus(Room.Status.NOT_STARTED.toString()))
                 .thenReturn(Optional.of(room));
         when(room.getRoomId()).thenReturn(roomId);
         lobbyService.assignLobby(username);
 
         verify(userRepository).findByUsername(username);
-        verify(roomRepository).findFirstByStatus(Room.Status.NOT_STARTED);
+        verify(roomRepository).findFirstByStatus(Room.Status.NOT_STARTED.toString());
         assertEquals(roomId, user.getRoomId());
         verify(userRepository).save(user);
         verify(roomRepository).save(room);
@@ -53,12 +53,12 @@ public class LobbyServiceTest {
     void assignLobby_whenWaitingRoomNotPresent() {
         User user = User.builder().username(username).build();
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(roomRepository.findFirstByStatus(Room.Status.NOT_STARTED))
+        when(roomRepository.findFirstByStatus(Room.Status.NOT_STARTED.toString()))
                 .thenReturn(Optional.empty());
         lobbyService.assignLobby(username);
 
         verify(userRepository).findByUsername(username);
-        verify(roomRepository).findFirstByStatus(Room.Status.NOT_STARTED);
+        verify(roomRepository).findFirstByStatus(Room.Status.NOT_STARTED.toString());
         verify(userRepository).save(user);
         ArgumentCaptor<Room> roomCaptor = ArgumentCaptor.forClass(Room.class);
         verify(roomRepository).save(roomCaptor.capture());
@@ -73,7 +73,20 @@ public class LobbyServiceTest {
         lobbyService.assignLobby(username);
 
         verify(userRepository).findByUsername(username);
-        verify(roomRepository, never()).findFirstByStatus(Room.Status.NOT_STARTED);
+        verify(roomRepository, never()).findFirstByStatus(Room.Status.NOT_STARTED.toString());
+        verify(userRepository, never()).save(any(User.class));
+        verify(roomRepository, never()).save(any(Room.class));
+    }
+
+    @Test
+    void assignLobby_whenUserAlreadyInRoom() {
+        User user = User.builder().username(username).roomId("existingRoom").build();
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+
+        lobbyService.assignLobby(username);
+
+        verify(userRepository).findByUsername(username);
+        verify(roomRepository, never()).findFirstByStatus(Room.Status.NOT_STARTED.toString());
         verify(userRepository, never()).save(any(User.class));
         verify(roomRepository, never()).save(any(Room.class));
     }

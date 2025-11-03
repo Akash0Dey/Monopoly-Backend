@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -18,7 +17,7 @@ public class Room {
     private String roomId;
 
     @Builder.Default
-    private Status status = Status.NOT_STARTED;
+    private String status = Status.NOT_STARTED.toString();
 
     @Column(name = "created_at", nullable = false)
     @Builder.Default
@@ -27,7 +26,11 @@ public class Room {
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    private static int CAPACITY = 2;
+    @Builder.Default
+    private int capacity = 2;
+
+    @Builder.Default
+    private int currentPlayers = 0;
 
     public enum Status {
         NOT_STARTED,
@@ -37,6 +40,25 @@ public class Room {
 
     public static Room createNewRoom() {
         return Room.builder().roomId(UUID.randomUUID().toString()).build();
+    }
+
+    private boolean isFull() {
+        return currentPlayers >= capacity;
+    }
+
+    private void startMatch() {
+        this.status = Status.STARTED.toString();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public boolean addPlayer() {
+        if (isFull()) {
+            return false;
+        }
+        currentPlayers++;
+        this.updatedAt = LocalDateTime.now();
+        if (isFull())   startMatch();
+        return true;
     }
 }
 
