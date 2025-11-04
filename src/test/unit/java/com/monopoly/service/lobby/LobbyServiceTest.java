@@ -1,5 +1,6 @@
 package com.monopoly.service.lobby;
 
+import com.monopoly.controller.dto.RoomResponse;
 import com.monopoly.entity.Room;
 import com.monopoly.entity.User;
 import com.monopoly.repository.RoomRepository;
@@ -12,10 +13,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -89,5 +90,37 @@ public class LobbyServiceTest {
         verify(roomRepository, never()).findFirstByStatus(Room.Status.NOT_STARTED.toString());
         verify(userRepository, never()).save(any(User.class));
         verify(roomRepository, never()).save(any(Room.class));
+    }
+
+    @Test
+    void testGetLobbyStatus_success() {
+        User user1 = User.builder().username("user1").roomId(roomId).build();
+        User user2 = User.builder().username("user2").roomId(roomId).build();
+
+        Room room = Room.builder()
+                .roomId(roomId)
+                .capacity(4)
+                .currentPlayers(2)
+                .build();
+
+        when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
+        when(userRepository.findByRoomId(roomId)).thenReturn(Arrays.asList(user1, user2));
+
+        RoomResponse response = lobbyService.getLobbyStatus(roomId, username);
+
+        assertNotNull(response);
+        assertEquals(roomId, response.getRoomId());
+        assertEquals(4, response.getCapacity());
+        assertEquals(2, response.getCurrentPlayers());
+        assertEquals(Arrays.asList("user1", "user2"), response.getPlayers());
+    }
+
+    @Test
+    void testGetLobbyStatus_roomNotFound() {
+        when(roomRepository.findById(roomId)).thenReturn(Optional.empty());
+
+        RoomResponse response = lobbyService.getLobbyStatus(roomId, username);
+
+        assertNull(response);
     }
 }

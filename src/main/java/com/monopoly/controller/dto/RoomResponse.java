@@ -8,9 +8,9 @@ import java.util.List;
 @Data
 @Builder
 public class RoomResponse {
-    private String code;
+    private String roomId;
     private int currentPlayers;
     private int capacity;
-    private List<String> players; // usernames
+    private List<String> players;
 }
 

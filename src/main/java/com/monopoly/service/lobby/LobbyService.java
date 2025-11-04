@@ -1,5 +1,6 @@
 package com.monopoly.service.lobby;
 
+import com.monopoly.controller.dto.RoomResponse;
 import com.monopoly.entity.Room;
 import com.monopoly.entity.User;
 import com.monopoly.repository.RoomRepository;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -44,6 +46,22 @@ public class LobbyService {
     private void addUserToNewRoom(User user) {
         Room newRoom = Room.createNewRoom();
         addUserToRoom(user, newRoom);
+    }
+
+    public RoomResponse getLobbyStatus(String roomId, String username) {
+        Optional<Room> optionalRoom = roomRepository.findById(roomId);
+        if (optionalRoom.isEmpty()) {
+            return null;
+        }
+        Room room = optionalRoom.get();
+        List<User> players = userRepository.findByRoomId(roomId);
+        List<String> playersName = players.stream().map(User::getUsername).toList();
+        return RoomResponse.builder()
+                .roomId(roomId)
+                .capacity(room.getCapacity())
+                .currentPlayers(room.getCurrentPlayers())
+                .players(playersName)
+                .build();
     }
 }
 

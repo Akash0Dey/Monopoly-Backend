@@ -1,4 +1,5 @@
 package com.monopoly.controller.lobby;
+import com.monopoly.controller.dto.RoomResponse;
 import com.monopoly.controller.dto.UserResponse;
 import com.monopoly.service.auth.UserService;
 import com.monopoly.service.lobby.LobbyService;
@@ -10,9 +11,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class LobbyControllerTest {
@@ -42,7 +44,33 @@ public class LobbyControllerTest {
 
         UserResponse user = lobbyController.joinLobby(request);
 
+        verify(lobbyService).assignLobby(username);
+        verify(userService).findUser(username);
         assertEquals("testUser", user.getUsername());
         assertEquals("room123", user.getRoomId());
+    }
+
+    @Test
+    void testLobbyStatus() {
+        String roomId = "room123";
+        when(request.getHeader("username")).thenReturn(username);
+        when(request.getHeader("roomId")).thenReturn(roomId);
+        when(lobbyService.getLobbyStatus(roomId, username)).thenReturn(
+                RoomResponse.builder()
+                        .roomId(roomId)
+                        .currentPlayers(4)
+                        .capacity(4)
+                        .players(Arrays.asList("user1", "user2", "user3", "user4"))
+                        .build()
+        );
+
+        RoomResponse response = lobbyController.getLobbyStatus(request);
+
+        verify(lobbyService).getLobbyStatus(roomId, username);
+        assertNotNull(response);
+        assertEquals(roomId, response.getRoomId());
+        assertEquals(4, response.getCurrentPlayers());
+        assertEquals(4, response.getCapacity());
+        assertEquals(java.util.Arrays.asList("user1", "user2", "user3", "user4"), response.getPlayers());
     }
 }
