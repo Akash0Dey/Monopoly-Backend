@@ -104,7 +104,7 @@ public class LobbyServiceTest {
                 .build();
 
         when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
-        when(userRepository.findByRoomId(roomId)).thenReturn(Arrays.asList(user1, user2));
+        when(userRepository.findAllByRoomId(roomId)).thenReturn(Arrays.asList(user1, user2));
 
         RoomResponse response = lobbyService.getLobbyStatus(roomId, username);
 

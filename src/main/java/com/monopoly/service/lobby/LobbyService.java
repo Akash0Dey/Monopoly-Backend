@@ -54,8 +54,9 @@ public class LobbyService {
             return null;
         }
         Room room = optionalRoom.get();
-        List<User> players = userRepository.findByRoomId(roomId);
+        List<User> players = userRepository.findAllByRoomId(roomId);
         List<String> playersName = players.stream().map(User::getUsername).toList();
+        log.info("players in room {}: {}", roomId, playersName);
         return RoomResponse.builder()
                 .roomId(roomId)
                 .capacity(room.getCapacity())
