@@ -8,6 +8,8 @@ on:
 jobs:
   deploy-dev:
     runs-on: ubuntu-latest
+    env:
+      CORS_ALLOWED_ORIGINS_DEV: ${{ secrets.CORS_ALLOWED_ORIGINS_DEV }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
